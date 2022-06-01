@@ -2,7 +2,8 @@
   <div class="about">
     <h1>This is an about page</h1>
     <p>{{ aData }}</p>
-    <button @click="cobaFetch">this is a button</button>
+    <br />
+    <button class="tw-border-2" @click="cobaFetch">this is a button</button>
   </div>
 </template>
 
@@ -29,9 +30,10 @@ export default {
         .then((response) => {
           console.log(response);
           let temp = JSON.parse(response);
-          that.aData = temp.message;
+          that.aData = temp[0];
           console.log(typeof response);
           console.log(typeof temp);
+          console.log(temp[0]);
         });
     },
   },
