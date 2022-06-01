@@ -1,20 +1,7 @@
-<script setup>
-import { RouterLink, RouterView } from "vue-router";
-import HelloWorld from "@/components/HelloWorld.vue";
-</script>
-
 <template>
-  <header class="m-7">
-    <img
-      alt="Vue logo"
-      class="logo"
-      src="@/assets/logo.svg"
-      width="125"
-      height="125"
-    />
-
+  <v-app>
     <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+      <!-- <HelloWorld msg="You did it!" /> -->
 
       <nav>
         <RouterLink to="/">Home</RouterLink>
@@ -24,7 +11,13 @@ import HelloWorld from "@/components/HelloWorld.vue";
         <RouterLink to="/Data">Data</RouterLink>
       </nav>
     </div>
-  </header>
-
-  <RouterView />
+    <v-main>
+      <router-view />
+    </v-main>
+  </v-app>
 </template>
+
+<script setup>
+import { RouterLink, RouterView } from "vue-router";
+import HelloWorld from "@/components/HelloWorld.vue";
+</script>
