@@ -8,17 +8,11 @@
 </template>
 
 <script>
-// import { defineComponent } from "@vue/composition-api";
 import { useCounterStore2 } from "@/stores/counter";
 
 export default {
   setup() {
     const counter = useCounterStore2();
-    // counter.count++;
-    // with autocompletion ✨
-    // counter.$patch({ count: counter.count + 1 });
-    // or using an action instead
-    // counter.increment();
     return { counter };
   },
   methods: {
