@@ -39,10 +39,12 @@
           Peminjaman setiap bulan
         </p>
         <span class="float-right">
-          <h2 class="text-green-500 mt-2 flex">
-            <span class="mr-2"> 47.9% </span
-            ><span>
-              <Icon icon="akar-icons:arrow-up" />
+          <h2 class="text-gray-500 mt-2 flex">
+            <span class="mr-2">
+              {{
+                seriesPeminjam[0].data[seriesVisitor[0].data.length - 1] -
+                seriesPeminjam[0].data[seriesVisitor[0].data.length - 2]
+              }}%
             </span>
           </h2>
         </span>
@@ -51,8 +53,8 @@
             width="100%"
             height="380"
             type="area"
-            :options="optionsVisitor"
-            :series="seriesVisitor"
+            :options="optionsPeminjam"
+            :series="seriesPeminjam"
           ></apexchart>
           <br />
           <hr />
@@ -63,13 +65,15 @@
         class="mt-2 bg-white dark:bg-gray-800 p-5 w-full rounded-md box-border shadow"
       >
         <p class="text-gray-400 font-lexend font-normal">
-          Pengembalian setiap bulan
+          Pengunjung setiap bulan
         </p>
         <span class="float-right">
-          <h2 class="text-green-500 mt-2 flex">
-            <span class="mr-2"> 47.9% </span
-            ><span>
-              <Icon icon="akar-icons:arrow-up" />
+          <h2 class="text-gray-500">
+            <span class="mr-2">
+              {{
+                seriesVisitor[0].data[seriesVisitor[0].data.length - 1] -
+                seriesVisitor[0].data[seriesVisitor[0].data.length - 2]
+              }}%
             </span>
           </h2>
         </span>
@@ -90,7 +94,7 @@
       class="mt-2 bg-white dark:bg-gray-800 p-5 w-full rounded-md box-border shadow"
     >
       <h2 class="font-bold text-lg text-gray-800 dark:text-gray-200">
-        total: 475
+        total: {{ total_peminjam_jurusan }}
       </h2>
       <p class="text-gray-400 font-lexend font-normal">
         Peminjam Berdasarkan Jurusan
@@ -158,13 +162,13 @@
               <td class="px-6 py-4 grid grid-rows-2">
                 <span
                   class="mr-2 my-2 text-green-800 bg-green-300 px-3 py-1 rounded-md cursor-pointer"
-                  @click="tryFetch"
+                  @click="fetchPeminjamanBuku"
                 >
                   Update
                 </span>
                 <span
                   class="text-purple-800 mr-2 my-2 bg-purple-300 px-3 py-1 rounded-md cursor-pointer"
-                  @click="tryFetch"
+                  @click="fetchPeminjamanBuku"
                 >
                   delete
                 </span>
@@ -185,26 +189,79 @@ export default {
   name: "Dashboard",
   data() {
     return {
-      // for more guide apexchart.js
-      // https://apexcharts.com/docs/chart-types/line-chart/
-
-      // chart data area
-
+      // pengunjung_bulanan
+      pengunjung_bulanan: {
+        bulan: [],
+        banyak: [],
+      },
+      // peminjam tiap jurusan
+      total_peminjam_jurusan: 0,
       chart: {
         fontFamily: "lexend, sans-serif",
       },
 
-      seriesBar: [
-        {
-          name: "Product 1",
-          data: [30, 40, 45, 50, 49, 60, 70, 91],
+      optionsVisitor: {
+        chart: {
+          id: "pengunjung",
+          toolbar: {
+            show: false,
+          },
+          zoom: {
+            enabled: false,
+          },
+          sparkline: {
+            enabled: true,
+          },
         },
+        legend: { show: false },
+        xaxis: {
+          categories: [
+            "jan",
+            "feb",
+            "mar",
+            "apr",
+            "may",
+            "jun",
+            "jul",
+            "aug",
+            "sep",
+            "oct",
+            "nov",
+            "dec",
+          ],
+          title: {
+            text: "Month",
+          },
+        },
+        yaxis: {
+          title: {
+            text: "Temperature",
+          },
+          min: 0,
+        },
+        colors: ["#fceae8"],
+
+        fill: {
+          type: "solid",
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.5,
+            opacityTo: 0.9,
+            stops: [0, 90, 100],
+          },
+        },
+        stroke: {
+          curve: "smooth",
+        },
+      },
+
+      seriesVisitor: [
         {
-          name: "Product 2",
-          data: [20, 34, 45, 55, 79, 87, 90, 98],
+          name: "Visitor ",
+          data: [30, 40, 45, 50, 91],
         },
       ],
-      optionsVisitor: {
+      optionsPeminjam: {
         chart: {
           toolbar: {
             show: false,
@@ -218,7 +275,20 @@ export default {
         },
         legend: { show: false },
         xaxis: {
-          categories: ["janu", "34", "45", "55", "79", "87", "90", "98"],
+          categories: [
+            "jan",
+            "feb",
+            "mar",
+            "apr",
+            "may",
+            "jun",
+            "jul",
+            "aug",
+            "sep",
+            "oct",
+            "nov",
+            "dec",
+          ],
           title: {
             text: "Month",
           },
@@ -245,14 +315,14 @@ export default {
         },
       },
 
-      seriesVisitor: [
+      seriesPeminjam: [
         {
           name: "Visitor ",
           data: [30, 40, 45, 50, 91],
         },
       ],
+
       optionsDonut: {
-        labels: ["Team A", "Team B", "Team C", "Team D", "Team E"],
         chart: {
           type: "donut",
         },
@@ -265,7 +335,7 @@ export default {
         dataLabels: {
           enabled: false,
         },
-        labels: ["admin", "SuperAdmin", "User", "Costumer"],
+        labels: [],
       },
 
       seriesDonut: [20, 15, 63, 83, 99],
@@ -303,7 +373,7 @@ export default {
   },
   methods: {
     async tryFetch() {
-      let that = this;
+      // let that = this;
       await fetch("http://localhost:3030/api", {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         headers: {
@@ -317,12 +387,188 @@ export default {
         .then((response) => {
           console.log(response);
           let temp = JSON.parse(response);
-          that.aData = temp[0];
+          // that.aData = temp[0];
           console.log(typeof response);
           console.log(typeof temp);
           console.log(temp[0]);
         });
     },
+    async fetchPengunjung() {
+      let that = this;
+      let tempData = [];
+      await fetch("http://localhost:3030/pengunjung", {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: "this is a message from vue client",
+        }),
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          console.log(response);
+          tempData = JSON.parse(response);
+          console.log(typeof response);
+          console.log(typeof tempData);
+          console.log(tempData[0]);
+          console.log(tempData);
+          that.optionsVisitor.xaxis.categories = [];
+          that.seriesVisitor[0].data = [];
+          console.log(
+            that.optionsVisitor.xaxis.categories,
+            " ==||== ",
+            that.seriesVisitor[0].data
+          );
+          tempData.forEach((data) => {
+            that.optionsVisitor.xaxis.categories.push(
+              that.convertToMonth(parseInt(data.bulan))
+            );
+            that.seriesVisitor[0].data.push(parseInt(data.banyak));
+            // console.log(`ini di dalam ${data.bulan} : ${data.banyak}`);
+            that.pengunjung_bulanan.bulan.push(
+              that.convertToMonth(parseInt(data.bulan))
+            );
+            that.pengunjung_bulanan.banyak.push(parseInt(data.banyak));
+            // console.log(`ini di dalam ${data.bulan} : ${data.banyak}`);
+            // console.log(`ini di dalam ${data.bulan} : ${data.banyak}`);
+          });
+
+          // that.optionsVisitor.xaxis.categories = that.pengunjung_bulanan.bulan;
+          // that.seriesVisitor[0].data = that.pengunjung_bulanan.banyak;
+          // console.log(
+          //   that.optionsVisitor.xaxis.categories,
+          //   " ",
+          //   that.seriesVisitor[0].data
+          // );
+        });
+    },
+    async fetchPeminjamanBuku() {
+      let that = this;
+      let tempData = [];
+      await fetch("http://localhost:3030/pinjam_buku", {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: "this is a message from vue client",
+        }),
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          console.log(response);
+          tempData = JSON.parse(response);
+          console.log(typeof response);
+          console.log(typeof tempData);
+          console.log(tempData[0]);
+          console.log(tempData);
+          // that.optionsVisitor.xaxis.categories = [];
+          that.seriesPeminjam[0].data = [];
+          // console.log(
+          //   that.optionsVisitor.xaxis.categories,
+          //   " ==||== ",
+          //   that.seriesVisitor[0].data
+          // );
+          tempData.forEach((data) => {
+            // that.optionsVisitor.xaxis.categories.push(
+            //   that.convertToMonth(parseInt(data.bulan))
+            // );
+            if (parseInt(data.coalesce) != 0)
+              that.seriesPeminjam[0].data.push(parseInt(data.coalesce));
+            // console.log(`ini di dalam ${data.bulan} : ${data.banyak}`);
+            // that.pengunjung_bulanan.bulan.push(
+            //   that.convertToMonth(parseInt(data.bulan))
+            // );
+            //   that.pengunjung_bulanan.banyak.push(parseInt(data.banyak));
+            //   // console.log(`ini di dalam ${data.bulan} : ${data.banyak}`);
+            //   // console.log(`ini di dalam ${data.bulan} : ${data.banyak}`);
+          });
+
+          // that.optionsVisitor.xaxis.categories = that.pengunjung_bulanan.bulan;
+          // that.seriesVisitor[0].data = that.pengunjung_bulanan.banyak;
+          // console.log(
+          //   that.optionsVisitor.xaxis.categories,
+          //   " ",
+          //   that.seriesVisitor[0].data
+          // );
+        });
+    },
+    async fetchPeminjamJurusan() {
+      let that = this;
+      let tempData = [];
+      let buffer = [];
+      await fetch("http://localhost:3030/peminjam", {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: "this is a message from vue client",
+        }),
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          console.log(response);
+          tempData = JSON.parse(response);
+          console.log(typeof response);
+          console.log(typeof tempData);
+          console.log(tempData[0]);
+          console.log(tempData);
+          console.log(that.optionsDonut.labels, " ==||== ", that.seriesDonut);
+          that.optionsDonut = {
+            labels: [],
+          };
+          that.seriesDonut = [];
+          console.log(that.optionsDonut.labels, " ==||== ", that.seriesDonut);
+          tempData.forEach((data) => {
+            // tempData.push(data.jurusan);
+            buffer.push(data.jurusan);
+            that.total_peminjam_jurusan += parseInt(data.jumlah_peminjam);
+
+            that.seriesDonut.push(parseInt(data.jumlah_peminjam));
+          });
+          that.optionsDonut = {
+            labels: buffer,
+          };
+          console.log(that.optionsDonut.labels, " ", that.seriesDonut);
+        });
+    },
+    // logic
+    convertToMonth(numbData) {
+      let name = "";
+      if (numbData == 1) {
+        name = "jan";
+      } else if (numbData == 2) {
+        name = "feb";
+      } else if (numbData == 3) {
+        name = "mar";
+      } else if (numbData == 4) {
+        name = "apr";
+      } else if (numbData == 5) {
+        name = "may";
+      } else if (numbData == 6) {
+        name = "jun";
+      } else if (numbData == 7) {
+        name = "jul";
+      } else if (numbData == 8) {
+        name = "aug";
+      } else if (numbData == 9) {
+        name = "sep";
+      } else if (numbData == 10) {
+        name = "oct";
+      } else if (numbData == 11) {
+        name = "nov";
+      } else {
+        name = "dec";
+      }
+      return name;
+    },
+  },
+  beforeMount() {
+    let that = this;
+    that.fetchPengunjung();
+    that.fetchPeminjamJurusan();
   },
 };
 </script>
