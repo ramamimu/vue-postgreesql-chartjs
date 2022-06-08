@@ -157,12 +157,14 @@
               </td>
               <td class="px-6 py-4 grid grid-rows-2">
                 <span
-                  class="mr-2 my-2 text-green-800 bg-green-300 px-3 py-1 rounded-md"
+                  class="mr-2 my-2 text-green-800 bg-green-300 px-3 py-1 rounded-md cursor-pointer"
+                  @click="tryFetch"
                 >
                   Update
                 </span>
                 <span
-                  class="text-purple-800 mr-2 my-2 bg-purple-300 px-3 py-1 rounded-md"
+                  class="text-purple-800 mr-2 my-2 bg-purple-300 px-3 py-1 rounded-md cursor-pointer"
+                  @click="tryFetch"
                 >
                   delete
                 </span>
@@ -299,6 +301,28 @@ export default {
   components: {
     Icon,
   },
-  mounted() {},
+  methods: {
+    async tryFetch() {
+      let that = this;
+      await fetch("http://localhost:3030/api", {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: "this is a message from vue client",
+        }),
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          console.log(response);
+          let temp = JSON.parse(response);
+          that.aData = temp[0];
+          console.log(typeof response);
+          console.log(typeof temp);
+          console.log(temp[0]);
+        });
+    },
+  },
 };
 </script>
