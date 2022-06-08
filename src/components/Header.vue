@@ -29,22 +29,22 @@
         <h2
           class="text-md text-indigo-800 ml-3 lg:block hidden px-5 p-2 rounded-md bg-indigo-200"
         >
-          Welcome back, Mohammad Sahrullah
+          Welcome back, Admin
         </h2>
       </div>
       <div class="mr-5 flex">
-        <div
+        <!-- <div
           class="input-box border dark:bg-gray-900 dark:border-gray-700 rounded-md mr-5 hidden lg:w-search w-full box-border lg:flex md:flex focus-within:bg-gray-100 dark:focus-within:bg-gray-700"
-        >
-          <span class="text-3xl p-2 text-gray-400"
-            ><Icon icon="ei:search"
-          /></span>
-          <input
+        > -->
+        <!-- <span class="text-3xl p-2 text-gray-400"
+              ><Icon icon="ei:search"
+            /></span> -->
+        <!-- <input
             type="text"
             placeholder="Search..."
             class="p-3 w-full bg-white dark:bg-gray-900 rounded-md outline-none focus:bg-gray-100 dark:focus:bg-gray-700"
-          />
-        </div>
+          /> -->
+        <!-- </div> -->
         <button
           id="theme-toggle"
           type="button"
@@ -76,9 +76,6 @@
           </svg>
         </button>
 
-        <button class="mr-5 text-2xl text-gray-500">
-          <Icon icon="clarity:notification-line" />
-        </button>
         <button @click="menuToggle" @blur="menuToggleBlur">
           <div
             class="user-avatar flex hover:bg-gray-100 dark:hover:bg-gray-700 p-1 cursor-pointer rounded-md"
@@ -102,7 +99,7 @@
           >
             <div class="py-3 px-4 text-sm text-gray-900 dark:text-gray-200">
               <div>Logged As</div>
-              <div class="font-medium truncate">Moh Sahrullah</div>
+              <div class="font-medium truncate">Admin</div>
             </div>
             <ul
               class="py-1 text-sm text-gray-700 dark:text-gray-200"
@@ -145,96 +142,94 @@
 </template>
 
 <script>
-  import { Icon } from "@iconify/vue";
-  export default {
-    data() {
-      return {
-        menu: false,
-      };
+import { Icon } from "@iconify/vue";
+export default {
+  data() {
+    return {
+      menu: false,
+    };
+  },
+  components: {
+    Icon,
+  },
+  methods: {
+    menuToggle: function () {
+      this.menu = !this.menu;
     },
-    components: {
-      Icon,
+    menuToggleBlur: function () {
+      this.menu = false;
     },
-    methods: {
-      menuToggle: function () {
-        this.menu = !this.menu;
-      },
-      menuToggleBlur: function () {
-        this.menu = false;
-      },
-      sidebarToggle: function () {
-        document.querySelector(".flex-sidebar").classList.remove("hidden");
-      },
+    sidebarToggle: function () {
+      document.querySelector(".flex-sidebar").classList.remove("hidden");
     },
-    mounted() {
-      var themeToggleDarkIcon = document.getElementById(
-        "theme-toggle-dark-icon"
-      );
-      var themeToggleLightIcon = document.getElementById(
-        "theme-toggle-light-icon"
-      );
+  },
+  mounted() {
+    var themeToggleDarkIcon = document.getElementById("theme-toggle-dark-icon");
+    var themeToggleLightIcon = document.getElementById(
+      "theme-toggle-light-icon"
+    );
 
-      // Change the icons inside the button based on previous settings
-      if (
-        localStorage.getItem("color-theme") === "dark" ||
-        !("color-theme" in localStorage)
-      ) {
-        document.documentElement.classList.add("dark");
-        themeToggleLightIcon.classList.remove("hidden");
-      } else {
-        document.documentElement.classList.remove("dark");
-        themeToggleDarkIcon.classList.remove("hidden");
-      }
+    // Change the icons inside the button based on previous settings
+    if (
+      localStorage.getItem("color-theme") === "dark" ||
+      !("color-theme" in localStorage)
+    ) {
+      document.documentElement.classList.add("dark");
+      themeToggleLightIcon.classList.remove("hidden");
+    } else {
+      document.documentElement.classList.remove("dark");
+      themeToggleDarkIcon.classList.remove("hidden");
+    }
 
-      // // if set via local storage previously
-      // if (!localStorage.getItem("color-theme")) {
-      //   if (localStorage.getItem("color-theme") === "light") {
-      //     document.documentElement.classList.add("dark");
-      //     localStorage.setItem("color-theme", "dark");
-      //   } else {
-      //     document.documentElement.classList.remove("dark");
-      //     localStorage.setItem("color-theme", "light");
-      //   }
+    // // if set via local storage previously
+    // if (!localStorage.getItem("color-theme")) {
+    //   if (localStorage.getItem("color-theme") === "light") {
+    //     document.documentElement.classList.add("dark");
+    //     localStorage.setItem("color-theme", "dark");
+    //   } else {
+    //     document.documentElement.classList.remove("dark");
+    //     localStorage.setItem("color-theme", "light");
+    //   }
 
-      // if NOT set via local storage previously
-      // } else {
-      //   if (document.documentElement.classList.contains("dark")) {
-      //     document.documentElement.classList.remove("dark");
-      //     localStorage.setItem("color-theme", "light");
-      //   } else {
-      //     document.documentElement.classList.add("dark");
-      //     localStorage.setItem("color-theme", "dark");
-      //   }
-      // }
+    // if NOT set via local storage previously
+    // } else {
+    //   if (document.documentElement.classList.contains("dark")) {
+    //     document.documentElement.classList.remove("dark");
+    //     localStorage.setItem("color-theme", "light");
+    //   } else {
+    //     document.documentElement.classList.add("dark");
+    //     localStorage.setItem("color-theme", "dark");
+    //   }
+    // }
 
-      var themeToggleBtn = document.getElementById("theme-toggle");
+    var themeToggleBtn = document.getElementById("theme-toggle");
 
-      themeToggleBtn.addEventListener("click", function () {
-        // toggle icons inside button
-        themeToggleDarkIcon.classList.toggle("hidden");
-        themeToggleLightIcon.classList.toggle("hidden");
+    themeToggleBtn.addEventListener("click", function () {
+      // toggle icons inside button
+      themeToggleDarkIcon.classList.toggle("hidden");
+      themeToggleLightIcon.classList.toggle("hidden");
 
-        // if set via local storage previously
-        if (localStorage.getItem("color-theme")) {
-          if (localStorage.getItem("color-theme") === "light") {
-            document.documentElement.classList.add("dark");
-            localStorage.setItem("color-theme", "dark");
-          } else {
-            document.documentElement.classList.remove("dark");
-            localStorage.setItem("color-theme", "light");
-          }
-
-          // if NOT set via local storage previously
+      // if set via local storage previously
+      if (localStorage.getItem("color-theme")) {
+        if (localStorage.getItem("color-theme") === "light") {
+          document.documentElement.classList.add("dark");
+          localStorage.setItem("color-theme", "dark");
         } else {
-          if (document.documentElement.classList.contains("dark")) {
-            document.documentElement.classList.remove("dark");
-            localStorage.setItem("color-theme", "light");
-          } else {
-            document.documentElement.classList.add("dark");
-            localStorage.setItem("color-theme", "dark");
-          }
+          document.documentElement.classList.remove("dark");
+          localStorage.setItem("color-theme", "light");
         }
-      });
-    },
-  };
+
+        // if NOT set via local storage previously
+      } else {
+        if (document.documentElement.classList.contains("dark")) {
+          document.documentElement.classList.remove("dark");
+          localStorage.setItem("color-theme", "light");
+        } else {
+          document.documentElement.classList.add("dark");
+          localStorage.setItem("color-theme", "dark");
+        }
+      }
+    });
+  },
+};
 </script>
