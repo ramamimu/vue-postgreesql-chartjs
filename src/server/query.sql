@@ -366,8 +366,8 @@ VALUES
 --=========PEMINJAMAN=========--
 CREATE TABLE peminjaman (
 	id_peminjaman INT NOT NULL,
-	tanggal_pinjam TIMESTAMP NOT NULL,
-	tanggal_kembali TIMESTAMP,
+	tanggal_pinjam DATE NOT NULL,
+	tanggal_kembali DATE,
 	tanggal_pengembalian TIMESTAMP,
 	denda INT,
 	id_petugas INT NOT NULL,

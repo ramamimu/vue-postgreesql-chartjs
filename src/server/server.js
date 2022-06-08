@@ -77,6 +77,25 @@ app.post("/peminjam", (request, response) => {
   console.log(request.body);
 });
 
+app.post("/tabel_peminjaman", (request, response) => {
+  const temp = JSON.stringify({
+    message: "a message from server",
+  });
+  client.query("select * from get_pinjam", (err, res) => {
+    if (!err) {
+      console.log(res.rows);
+      console.log(typeof res.rows);
+      let someObj = "sesuatu";
+      someObj = JSON.stringify(res.rows);
+      response.json(someObj);
+      console.log("success to send");
+    } else {
+      console.log(err);
+    }
+  });
+  console.log(request.body);
+});
+
 app.post("/pinjam_buku", (request, response) => {
   const temp = JSON.stringify({
     message: "a message from server",

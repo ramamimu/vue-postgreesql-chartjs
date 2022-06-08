@@ -42,8 +42,8 @@
           <h2 class="text-gray-500 mt-2 flex">
             <span class="mr-2">
               {{
-                seriesPeminjam[0].data[seriesVisitor[0].data.length - 1] -
-                seriesPeminjam[0].data[seriesVisitor[0].data.length - 2]
+                seriesPeminjam[0].data[seriesPeminjam[0].data.length - 1] -
+                seriesPeminjam[0].data[seriesPeminjam[0].data.length - 2]
               }}%
             </span>
           </h2>
@@ -141,34 +141,34 @@
           <tbody>
             <tr
               class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50"
-              v-for="items in tableTransaction"
-              :key="items.transaction"
+              v-for="items in table_peminjaman"
+              :key="items.id_peminjaman"
             >
               <td class="px-6 py-4">
-                {{ items.transaction }}
+                {{ items.id_peminjaman }}
               </td>
               <td class="px-6 py-4">
-                {{ items.datetime }}
+                {{ items.tanggal_pinjam }}
               </td>
               <td class="px-6 py-4">
-                {{ items.datetime }}
+                {{ items.tanggal_kembali }}
               </td>
               <td class="px-6 py-4">
-                {{ items.amount }}
+                {{ items.tanggal_pengembalian }}
               </td>
               <td class="px-6 py-4">
-                {{ items.amount }}
+                {{ items.denda }}
               </td>
               <td class="px-6 py-4 grid grid-rows-2">
                 <span
                   class="mr-2 my-2 text-green-800 bg-green-300 px-3 py-1 rounded-md cursor-pointer"
-                  @click="fetchPeminjamanBuku"
+                  @click="fetchTabelPeminjaman"
                 >
                   Update
                 </span>
                 <span
                   class="text-purple-800 mr-2 my-2 bg-purple-300 px-3 py-1 rounded-md cursor-pointer"
-                  @click="fetchPeminjamanBuku"
+                  @click="fetchTabelPeminjaman"
                 >
                   delete
                 </span>
@@ -194,6 +194,7 @@ export default {
         bulan: [],
         banyak: [],
       },
+      table_peminjaman: [],
       // peminjam tiap jurusan
       total_peminjam_jurusan: 0,
       chart: {
@@ -425,22 +426,11 @@ export default {
               that.convertToMonth(parseInt(data.bulan))
             );
             that.seriesVisitor[0].data.push(parseInt(data.banyak));
-            // console.log(`ini di dalam ${data.bulan} : ${data.banyak}`);
             that.pengunjung_bulanan.bulan.push(
               that.convertToMonth(parseInt(data.bulan))
             );
             that.pengunjung_bulanan.banyak.push(parseInt(data.banyak));
-            // console.log(`ini di dalam ${data.bulan} : ${data.banyak}`);
-            // console.log(`ini di dalam ${data.bulan} : ${data.banyak}`);
           });
-
-          // that.optionsVisitor.xaxis.categories = that.pengunjung_bulanan.bulan;
-          // that.seriesVisitor[0].data = that.pengunjung_bulanan.banyak;
-          // console.log(
-          //   that.optionsVisitor.xaxis.categories,
-          //   " ",
-          //   that.seriesVisitor[0].data
-          // );
         });
     },
     async fetchPeminjamanBuku() {
@@ -463,35 +453,11 @@ export default {
           console.log(typeof tempData);
           console.log(tempData[0]);
           console.log(tempData);
-          // that.optionsVisitor.xaxis.categories = [];
           that.seriesPeminjam[0].data = [];
-          // console.log(
-          //   that.optionsVisitor.xaxis.categories,
-          //   " ==||== ",
-          //   that.seriesVisitor[0].data
-          // );
           tempData.forEach((data) => {
-            // that.optionsVisitor.xaxis.categories.push(
-            //   that.convertToMonth(parseInt(data.bulan))
-            // );
             if (parseInt(data.coalesce) != 0)
               that.seriesPeminjam[0].data.push(parseInt(data.coalesce));
-            // console.log(`ini di dalam ${data.bulan} : ${data.banyak}`);
-            // that.pengunjung_bulanan.bulan.push(
-            //   that.convertToMonth(parseInt(data.bulan))
-            // );
-            //   that.pengunjung_bulanan.banyak.push(parseInt(data.banyak));
-            //   // console.log(`ini di dalam ${data.bulan} : ${data.banyak}`);
-            //   // console.log(`ini di dalam ${data.bulan} : ${data.banyak}`);
           });
-
-          // that.optionsVisitor.xaxis.categories = that.pengunjung_bulanan.bulan;
-          // that.seriesVisitor[0].data = that.pengunjung_bulanan.banyak;
-          // console.log(
-          //   that.optionsVisitor.xaxis.categories,
-          //   " ",
-          //   that.seriesVisitor[0].data
-          // );
         });
     },
     async fetchPeminjamJurusan() {
@@ -534,6 +500,34 @@ export default {
           console.log(that.optionsDonut.labels, " ", that.seriesDonut);
         });
     },
+    async fetchTabelPeminjaman() {
+      let that = this;
+      let tempData = [];
+      let buffer = [];
+      await fetch("http://localhost:3030/tabel_peminjaman", {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: "this is a message from vue client",
+        }),
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          console.log(response);
+          tempData = JSON.parse(response);
+          console.log(typeof response);
+          console.log(typeof tempData);
+          // console.log(tempData[0]);
+          // console.log(tempData);
+          that.table_peminjaman.push(...tempData);
+          // that.table_peminjaman = tempData;
+          console.log(that.table_peminjaman);
+          // tempData.forEach((data) => {
+          // });
+        });
+    },
     // logic
     convertToMonth(numbData) {
       let name = "";
@@ -569,6 +563,8 @@ export default {
     let that = this;
     that.fetchPengunjung();
     that.fetchPeminjamJurusan();
+    that.fetchPeminjamanBuku();
+    that.fetchTabelPeminjaman();
   },
 };
 </script>
