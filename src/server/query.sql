@@ -501,6 +501,22 @@ SELECT B.bulan, COALESCE(P.banyak,0)+COALESCE(K.banyak,0) AS banyak
 FROM pinjam P FULL OUTER JOIN kembali K ON (P.bulan = K.bulan) CROSS JOIN bulan B
 WHERE B.bulan = P.bulan OR B.bulan = K.bulan;
 
+-- VIEW
+
+CREATE VIEW pengunjungbulanan AS  WITH pinjam AS (
+	SELECT EXTRACT(MONTH FROM P.tanggal_pinjam) as bulan, COUNT(P.id_peminjaman) as banyak
+	FROM peminjaman P
+	GROUP BY bulan
+), kembali AS(
+	SELECT EXTRACT(MONTH FROM P.tanggal_pengembalian) as bulan, COUNT(P.id_peminjaman) as banyak
+	FROM peminjaman P
+	GROUP BY bulan
+)
+SELECT B.bulan, COALESCE(P.banyak,0)+COALESCE(K.banyak,0) AS banyak 
+FROM pinjam P FULL OUTER JOIN kembali K ON (P.bulan = K.bulan) CROSS JOIN bulan B
+WHERE B.bulan = P.bulan OR B.bulan = K.bulan;
+
+
 --return value nya nama jurusan, jumlah peminjam berdasarkan jurusan
 CREATE OR REPLACE VIEW peminjam_jurusan AS
 SELECT J.jurusan, COUNT(DISTINCT P.id_anggota) as jumlah_peminjam
@@ -521,3 +537,5 @@ FROM (
 	) A RIGHT OUTER 
 		JOIN
 	bulan B ON (B.bulan=A.bulan);
+
+CREATE OR REPLACE VIEW get_pinjam AS SELECT * FROM peminjaman;

@@ -9,8 +9,10 @@ import "vue3-perfect-scrollbar/dist/vue3-perfect-scrollbar.css";
 import "./assets/tailwind.css";
 import "./assets/animate.css";
 import "./assets/sass/css/windzo.css";
+import vueScrollto from "vue-scrollto";
 
 const app = createApp(App);
+app.use(vueScrollto);
 app.use(router, Icon);
 app.use(VueApexCharts);
 app.use(PerfectScrollbar);

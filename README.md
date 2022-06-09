@@ -41,6 +41,20 @@ tabel_peminjaman{
 }
 ```
 
+```sql
+INSERT INTO peminjaman (tanggal_pinjam, tanggal_pengembalian, id_petugas, id_anggota, id_buku)
+VALUES
+	('2022-01-03','2022-01-15',3,1,1),
+```
+
+```sql
+UPDATE table_name
+SET tanggal_kembali = value1,
+    denda = value2,
+    ...
+WHERE condition;
+```
+
 - that.optionsVisitor.xaxis.categories = pengunjung_bulanan.bulan
 
 - that.seriesVisitor[0].data = pengunjung_bulanan.banyak
@@ -48,3 +62,9 @@ tabel_peminjaman{
 - that.optionsDonut.labels
 
 - that.seriesDonut
+
+optionPeminjam={
+xaxis:{
+categories:
+}
+}

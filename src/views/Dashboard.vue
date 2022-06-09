@@ -23,10 +23,16 @@
       </ol>
     </nav>
     <!-- end nav -->
-    <div class="mt-5 w-full">
+    <div class="mt-5 w-full flex justify-between items-center">
       <h1 class="text-2xl text-gray-900 dark:text-gray-200 font-medium">
         Dashboard
       </h1>
+      <div
+        class="cursor-pointer ml-3 mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        @click="updateAllData"
+      >
+        refresh
+      </div>
     </div>
     <div class="mt-2 lg:flex block lg:gap-2">
       <div
@@ -128,7 +134,8 @@
             class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
           >
             <tr>
-              <th scope="col" class="uppercase px-6 py-3">ID</th>
+              <th scope="col" class="uppercase px-6 py-3">ID Peminjaman</th>
+              <th scope="col" class="uppercase px-6 py-3">ID Anggota</th>
               <th scope="col" class="uppercase px-6 py-3">Tanggal Pinjam</th>
               <th scope="col" class="uppercase px-6 py-3">Tanggal Kembali</th>
               <th scope="col" class="uppercase px-6 py-3">
@@ -148,6 +155,9 @@
                 {{ items.id_peminjaman }}
               </td>
               <td class="px-6 py-4">
+                {{ items.id_anggota }}
+              </td>
+              <td class="px-6 py-4">
                 {{ items.tanggal_pinjam }}
               </td>
               <td class="px-6 py-4">
@@ -162,28 +172,192 @@
               <td class="px-6 py-4 grid grid-rows-2">
                 <span
                   class="mr-2 my-2 text-green-800 bg-green-300 px-3 py-1 rounded-md cursor-pointer"
-                  @click="fetchTabelPeminjaman"
+                  @click="beforeUpdateData(items.id_peminjaman)"
                 >
+                  <!-- href="#updatesession" -->
+                  <!-- v-scroll-to="{ element: '#updatesession', duration: 5000 }" -->
+                  <!-- fetchPengunjung();
+                    fetchPeminjamJurusan();
+                    fetchPeminjamanBuku();
+                    fetchTabelPeminjaman(); -->
                   Update
                 </span>
                 <span
                   class="text-purple-800 mr-2 my-2 bg-purple-300 px-3 py-1 rounded-md cursor-pointer"
-                  @click="fetchTabelPeminjaman"
+                  @click="deleteTabelPeminjaman(items.id_peminjaman)"
                 >
                   delete
                 </span>
               </td>
             </tr>
+
+            <tr
+              class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50"
+            >
+              <td class="px-6 py-4">Total</td>
+              <td class="px-6 py-4">{{ table_peminjaman.length }}</td>
+            </tr>
           </tbody>
         </table>
       </div>
     </div>
+    <!-- update data -->
+    <form @submit.prevent="updateData" v-show="is_update_open">
+      <div
+        class="flex flex-wrap -mx-3 mb-6 mt-5 transition ease-in-out"
+        id="updatesession"
+      >
+        <h2 class="text-3xl ml-3 text-gray-200">Update Table</h2>
+        <h3 class="text-xl ml-3 text-gray-200">ID: {{ update_id }}</h3>
+        <div class="w-full mt-2 px-3 mb-6 md:mb-0">
+          <label
+            class="block uppercase tracking-wide text-gray-400 text-xs font-bold mb-2"
+            for="grid-first-name"
+          >
+            Tanggal Kembali
+          </label>
+          <input
+            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+            id="grid-first-name"
+            type="text"
+            placeholder="example: 2022-01-03"
+            v-model="update_data.tanggal_kembali"
+            required
+          />
+        </div>
+        <div class="w-full mt-2 px-3 mb-6 md:mb-0">
+          <label
+            class="block uppercase tracking-wide text-gray-400 text-xs font-bold mb-2"
+            for="grid-first-name"
+          >
+            Denda
+          </label>
+          <input
+            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+            id="grid-first-name"
+            type="text"
+            placeholder="example: 5000"
+            v-model="update_data.denda"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          class="ml-3 mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Submit
+        </button>
+        <button
+          @click="is_update_open = false"
+          class="ml-3 mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+    <!-- insert data -->
+    <form @submit.prevent="insertData">
+      <div class="flex flex-wrap -mx-3 mb-6 mt-5">
+        <h2 class="text-3xl ml-3 text-gray-200">Insert Table</h2>
+        <div class="w-full mt-2 px-3 mb-6 md:mb-0">
+          <label
+            class="block uppercase tracking-wide text-gray-400 text-xs font-bold mb-2"
+            for="grid-first-name"
+          >
+            Tanggal Pinjam
+          </label>
+          <input
+            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+            id="grid-first-name"
+            type="text"
+            placeholder="example: 2022-01-03"
+            v-model="insert_data.tanggal_pinjam"
+            required
+          />
+        </div>
+        <div class="w-full px-3">
+          <label
+            class="block uppercase tracking-wide text-gray-400 text-xs font-bold mb-2"
+            for="grid-last-name"
+          >
+            Tanggal Pengembalian
+          </label>
+          <input
+            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            id="grid-last-name"
+            type="text"
+            placeholder="example: 2022-01-03"
+            v-model="insert_data.tanggal_pengembalian"
+            required
+          />
+        </div>
+        <div class="w-full mt-2 px-3">
+          <label
+            class="block uppercase tracking-wide text-gray-400 text-xs font-bold mb-2"
+            for="grid-last-name"
+          >
+            ID Petugas
+          </label>
+          <input
+            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            id="grid-last-name"
+            type="text"
+            placeholder="example: 9"
+            v-model="insert_data.id_petugas"
+            required
+          />
+        </div>
+        <div class="w-full mt-2 px-3">
+          <label
+            class="block uppercase tracking-wide text-gray-400 text-xs font-bold mb-2"
+            for="grid-last-name"
+          >
+            ID Anggota
+          </label>
+          <input
+            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            id="grid-last-name"
+            type="text"
+            placeholder="example: 10"
+            v-model="insert_data.id_anggota"
+            required
+          />
+        </div>
+        <div class="w-full mt-2 px-3">
+          <label
+            class="block uppercase tracking-wide text-gray-400 text-xs font-bold mb-2"
+            for="grid-last-name"
+          >
+            ID buku
+          </label>
+          <input
+            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            id="grid-last-name"
+            type="text"
+            placeholder="example: 11"
+            v-model="insert_data.id_buku"
+            required
+          />
+          <!-- <p class="mt-2 text-red-500 text-xs italic">
+            Please fill out this field.
+          </p> -->
+        </div>
+        <button
+          type="submit"
+          class="cursor-pointer ml-3 mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Submit
+        </button>
+      </div>
+    </form>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
 import { Icon } from "@iconify/vue";
+// import { response } from "express";
+// import pg from "pg";
 
 export default {
   name: "Dashboard",
@@ -200,7 +374,22 @@ export default {
       chart: {
         fontFamily: "lexend, sans-serif",
       },
-
+      // insert
+      insert_data: {
+        tanggal_pinjam: "",
+        tanggal_pengembalian: "",
+        id_petugas: "",
+        id_anggota: "",
+        id_buku: "",
+      },
+      // Update
+      update_id: "",
+      update_data: {
+        tanggal_kembali: "",
+        denda: "",
+      },
+      is_update_open: false,
+      // setup chart
       optionsVisitor: {
         chart: {
           id: "pengunjung",
@@ -318,8 +507,8 @@ export default {
 
       seriesPeminjam: [
         {
-          name: "Visitor ",
-          data: [30, 40, 45, 50, 91],
+          name: "Peminjam",
+          data: [],
         },
       ],
 
@@ -340,32 +529,6 @@ export default {
       },
 
       seriesDonut: [20, 15, 63, 83, 99],
-      tableTransaction: [
-        {
-          transaction: "Payment from Ike yolanda",
-          datetime: "Apr 22, 2022",
-          amount: "Rp.450.000",
-          statusTransaction: "completed",
-        },
-        {
-          transaction: "Payment from Ice Wulandari",
-          datetime: "May 2, 2022",
-          amount: "Rp.250.000",
-          statusTransaction: "completed",
-        },
-        {
-          transaction: "Payment from Alfiah Gipta Jannatil Hasanah",
-          datetime: "May 5, 2022",
-          amount: "Rp.150.000",
-          statusTransaction: "progress",
-        },
-        {
-          transaction: "Payment failed from #046577",
-          datetime: "May 5, 2022",
-          amount: "Rp.180.000",
-          statusTransaction: "cancelled",
-        },
-      ],
     };
     // end chart data line
   },
@@ -397,6 +560,7 @@ export default {
     async fetchPengunjung() {
       let that = this;
       let tempData = [];
+      let tempLabel = [];
       await fetch("http://localhost:3030/pengunjung", {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         headers: {
@@ -422,13 +586,16 @@ export default {
             that.seriesVisitor[0].data
           );
           tempData.forEach((data) => {
-            that.optionsVisitor.xaxis.categories.push(
-              that.convertToMonth(parseInt(data.bulan))
-            );
+            // tempLabel.push(that.convertToMonth(parseInt(data.bulan)));
             that.seriesVisitor[0].data.push(parseInt(data.banyak));
             that.pengunjung_bulanan.bulan.push(
               that.convertToMonth(parseInt(data.bulan))
             );
+            that.optionsVisitor = {
+              xaxis: {
+                categories: that.pengunjung_bulanan.bulan,
+              },
+            };
             that.pengunjung_bulanan.banyak.push(parseInt(data.banyak));
           });
         });
@@ -436,6 +603,7 @@ export default {
     async fetchPeminjamanBuku() {
       let that = this;
       let tempData = [];
+      let tempLabel = [];
       await fetch("http://localhost:3030/pinjam_buku", {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         headers: {
@@ -455,9 +623,16 @@ export default {
           console.log(tempData);
           that.seriesPeminjam[0].data = [];
           tempData.forEach((data) => {
-            if (parseInt(data.coalesce) != 0)
+            if (parseInt(data.coalesce) != 0) {
               that.seriesPeminjam[0].data.push(parseInt(data.coalesce));
+              tempLabel.push(this.convertToMonth(data.bulan));
+            }
           });
+          that.optionsPeminjam = {
+            xaxis: {
+              categories: tempLabel,
+            },
+          };
         });
     },
     async fetchPeminjamJurusan() {
@@ -487,6 +662,7 @@ export default {
           };
           that.seriesDonut = [];
           console.log(that.optionsDonut.labels, " ==||== ", that.seriesDonut);
+          that.total_peminjam_jurusan = 0;
           tempData.forEach((data) => {
             // tempData.push(data.jurusan);
             buffer.push(data.jurusan);
@@ -519,13 +695,13 @@ export default {
           tempData = JSON.parse(response);
           console.log(typeof response);
           console.log(typeof tempData);
-          // console.log(tempData[0]);
-          // console.log(tempData);
+          that.table_peminjaman = [];
           that.table_peminjaman.push(...tempData);
-          // that.table_peminjaman = tempData;
-          console.log(that.table_peminjaman);
-          // tempData.forEach((data) => {
-          // });
+          // console.log("sebelum short =>", that.table_peminjaman);
+          that.table_peminjaman.sort(
+            (a, b) => parseInt(a.id_anggota) > parseInt(b.id_anggota)
+          );
+          // console.log("sesudah sort =>", that.table_peminjaman);
         });
     },
     // logic
@@ -557,6 +733,88 @@ export default {
         name = "dec";
       }
       return name;
+    },
+    convertLocalTime(value) {
+      console.log(value);
+      new Date(Date.parse(value + "+0000"));
+      console.log(value);
+    },
+    beforeUpdateData(update_id) {
+      const el = document.getElementById("updatesession");
+      el.scrollIntoView({ behavior: "smooth" });
+      let that = this;
+      that.update_id = update_id;
+      that.is_update_open = true;
+    },
+
+    // CRUD
+    async insertData() {
+      let that = this;
+      console.log("masuk");
+      await fetch("http://localhost:3030/insert_data", {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: `INSERT INTO peminjaman (tanggal_pinjam, tanggal_pengembalian, id_petugas, id_anggota, id_buku) VALUES ('${that.insert_data.tanggal_pinjam}','${that.insert_data.tanggal_pengembalian}', ${that.insert_data.id_petugas}, ${that.insert_data.id_anggota}, ${that.insert_data.id_buku}) `,
+        }),
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          console.log(response);
+          that.updateAllData();
+        });
+      this.insert_data.id_anggota = "";
+      this.insert_data.id_buku = "";
+      this.insert_data.id_petugas = "";
+      this.insert_data.tanggal_pengembalian = "";
+      this.insert_data.tanggal_pinjam = "";
+    },
+    async deleteTabelPeminjaman(id_peminjaman) {
+      let that = this;
+      await fetch("http://localhost:3030/delete_tabel_peminjaman", {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: `${id_peminjaman}`,
+        }),
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          console.log(response);
+          that.updateAllData();
+        });
+    },
+    async updateData(e) {
+      let that = this;
+      // that.update_id = update_id;
+      await fetch("http://localhost:3030/update_data", {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: `UPDATE peminjaman SET tanggal_kembali='${that.update_data.tanggal_kembali}', denda=${that.update_data.denda} WHERE id_peminjaman=${that.update_id}`,
+        }),
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          console.log(response);
+          that.updateAllData();
+        });
+      this.update_data.tanggal_kembali = "";
+      this.update_data.denda = "";
+      that.is_update_open = false;
+    },
+    updateAllData() {
+      let that = this;
+      that.fetchPengunjung();
+      that.fetchPeminjamJurusan();
+      that.fetchPeminjamanBuku();
+      that.fetchTabelPeminjaman();
     },
   },
   beforeMount() {

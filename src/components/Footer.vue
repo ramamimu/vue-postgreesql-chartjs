@@ -12,7 +12,7 @@
       </div>
     </div>
     <footer class="w-full box-border p-5 mt-3 text-center">
-      <p class="text-sm dark:text-gray-400">Template by Windzo</p>
+      <p class="text-sm dark:text-gray-400">Template by MBD K-06 and Windzo</p>
     </footer>
   </div>
 </template>
